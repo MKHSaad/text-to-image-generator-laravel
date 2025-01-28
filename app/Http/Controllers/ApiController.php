@@ -12,8 +12,8 @@ class ApiController extends Controller
         $decodedPrompt = urldecode($prompt);
         print($decodedPrompt);
         // API Endpoint and Key Configuration
-        $url = env('STABILITY_API_URL');
-        $apiKey = env('STABILITY_API_KEY');
+        $url = env('API_URL');
+        $apiKey = env('API_KEY');
 
         if (!$apiKey) {
             throw new \Exception('STABILITY_API_KEY is not set in the environment file.');
