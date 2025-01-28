@@ -22,7 +22,10 @@ class ApiController extends Controller
         $payload = [
             'prompt' => $decodedPrompt,
             'output_format' => 'png',
-            'number' => 1,
+            'number' => '1',           
+            'model' => 'sd3.5-medium',
+            'aspect_ratio' => '4:5',
+            'style_preset' => 'cinematic',
         ];
 
         try {
