@@ -7,60 +7,74 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## About Laravel
+## About Set up
+1. Controllers
+    ApiController.php
+     - Handles the API call to generate the image.
+     - Stores the generated image in `storage/app/public/Assets`.
+     - Passes the public URL of the stored image to the `display-image` view.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+   ImageController.php
+     - Handles the form submission and generates a prompt based on user input.
+     - Redirects to the `ApiController` to trigger image generation.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+   StorageController.php
+     - Serves images stored in the `storage/app/public/Assets` directory via a route.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+2. Blade View
+   display-image.blade.php
+     - Dynamically displays the image passed via `$imageUrl`.
+     - Fallback message displays if no image URL is available.
 
-## Learning Laravel
+3. Routes
+   Routes correctly link to:
+     - Generate the image (`/generate`).
+     - Call the Stability API with the prompt (`/api/generate/{prompt}`).
+     - Display the stored image (`/display-image`).
+     - Serve the image from storage (`/storage/Assets/{filename}`).
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+4. File Storage
+   - Images generated are saved in the `storage/app/public/Assets` directory.
+   - Laravel's `asset()` function is used to generate the correct public URL for these images.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+How It All Works Together
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+1. Step 1: Generate Prompt via Form
+   - User fills out a form handled by `ImageController`.
+   - `ImageController` creates the prompt and redirects to `/api/generate/{prompt}`.
 
-### Premium Partners
+2. Step 2: Generate Image via API
+   - `ApiController` calls the Stability API, saves the generated image to `storage/app/public/Assets`, and redirects to `/display-image`.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+3. Step 3: Display Image
+   - The `display-image.blade.php` view receives the URL of the stored image and displays it.
 
-## Contributing
+4. Step 4: Serve Image
+   - Images are served via the `/storage/Assets/{filename}` route, handled by `StorageController`.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+Testing Checklist
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Environment Configuration:
+  - Ensure `.env` has the `STABILITY_API_URL` and `STABILITY_API_KEY` values.
 
-## Security Vulnerabilities
+Storage Link:
+  - Run `php artisan storage:link` to ensure the `public/storage` symlink is created.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Test Form Submission:
+  - Visit `/generate`, fill out the form, and submit it.
+  - Confirm the image is generated, stored, and displayed on `/display-image`.
 
-## License
+Direct Image Access:
+  - Verify that accessing `/storage/Assets/{filename}` directly displays the image.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+
+{For local host user}
+Set up your host :
+  - Verify that accessing `/storage/Assets/{filename}` directly displays the image.
+
