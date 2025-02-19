@@ -44,4 +44,34 @@ class ImageController extends Controller
 
         return redirect()->route('api.generate', ['prompt' => urlencode($finalPrompt)]);
     }
+    public function saveEditedImage(Request $request)
+    {
+        // Validate incoming request to ensure it contains valid image data
+        $request->validate([
+            'imageData' => 'required|string', // Base64 encoded image data
+        ]);
+
+        // Get the base64 image data from the request
+        $imageData = $request->input('imageData');
+        
+        // Remove base64 prefix (if exists) to store only the raw data
+        if (preg_match('/^data:image\/(\w+);base64,/', $imageData, $matches)) {
+            $imageData = substr($imageData, strpos($imageData, ',') + 1);
+        }
+
+        // Decode the base64 image data
+        $imageData = base64_decode($imageData);
+
+        // Generate a filename for the new image
+        $imageName = 'edited_image_' . time() . '.png';
+
+        // Store the image in the 'public/edited_images' folder
+        $path = Storage::disk('public')->put('edited_images/' . $imageName, $imageData);
+
+        // Return the image URL to download the saved image
+        return response()->json([
+            'success' => true,
+            'imageUrl' => Storage::url('edited_images/' . $imageName),
+        ]);
+    }
 }

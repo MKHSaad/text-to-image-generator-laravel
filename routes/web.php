@@ -21,6 +21,8 @@ Route::get('/display-image', function (Request $request) {
 // Route to serve stored images from the "Assets" directory
 Route::get('/storage/Assets/{filename}', [StorageController::class, 'show'])->name('storage.assets');
 
+Route::post('/save-edited-image', [ImageController::class, 'saveEditedImage'])->name('save.edited.image');
+
 
 
 
