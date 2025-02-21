@@ -7,6 +7,8 @@ function initializeImageEditor(imageUrl) {
     var imgWidth = 200, imgHeight = 200;
     var isDrawingMode = false;
     var lastX, lastY;
+    var rotationAngle = 0;
+    var flipX = 1, flipY = 1; // Track flip states
 
     // Draw the image when it's loaded
     img.onload = function() {
@@ -26,6 +28,7 @@ function initializeImageEditor(imageUrl) {
 
     // Rotate Image by 90 degrees
     function rotateImage() {
+        rotationAngle += 90;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.save();
         ctx.translate(imgX + imgWidth / 2, imgY + imgHeight / 2);
@@ -36,20 +39,22 @@ function initializeImageEditor(imageUrl) {
 
     // Flip Image horizontally
     function flipHorizontal() {
+        flipX = flipX === 1 ? -1 : 1;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.save();
         ctx.translate(imgX + imgWidth, imgY);
-        ctx.scale(-1, 1);
+        ctx.scale(flipX, 1);
         ctx.drawImage(img, 0, 0, imgWidth, imgHeight);
         ctx.restore();
     }
 
     // Flip Image vertically
     function flipVertical() {
+        flipY = flipY === 1 ? -1 : 1;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.save();
         ctx.translate(imgX, imgY + imgHeight);
-        ctx.scale(1, -1);
+        ctx.scale(1, flipY);
         ctx.drawImage(img, 0, 0, imgWidth, imgHeight);
         ctx.restore();
     }
@@ -102,7 +107,7 @@ function initializeImageEditor(imageUrl) {
             url: '/save-edited-image', // Route to save the image
             type: 'POST',
             data: {
-                _token: "{{ csrf_token() }}", // CSRF token for security
+                _token: document.querySelector('meta[name="csrf-token"]').getAttribute('content'), // CSRF token dynamically
                 imageData: imageData
             },
             success: function(response) {
